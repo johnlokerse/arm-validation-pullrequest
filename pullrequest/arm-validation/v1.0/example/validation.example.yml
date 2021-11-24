@@ -1,0 +1,36 @@
+trigger: none
+
+pool:
+  vmImage: windows-2019
+
+resources:
+  repositories:
+    - repository: generic
+      type: git
+      name: <LOCATION_OF_GENERIC_REPO>
+
+jobs:
+  - template: pullrequest\arm-validation\v1.0\pipelines\validation.yml
+    parameters:
+      subscription: <REPLACE_WITH_SUBSCRIPTION_NAME>
+      resources:
+        - name: VirtualNetwork_STAGING
+          resourceGroup: <REPLACE_WITH_RESOURCEGROUP_NAME>
+          subscription: <REPLACE_WITH_SUBSCRIPTION_NAME>
+          templateFile: networking/virtual-network/v2.0/templates/virtual-network.jsonc
+          parameterFile: <REPLACE_WITH_PARAMETERFILE_IN_WORKLOAD>
+        - name: LAW_STAGING
+          resourceGroup: <REPLACE_WITH_RESOURCEGROUP_NAME>
+          subscription: <REPLACE_WITH_SUBSCRIPTION_NAME>
+          templateFile: analytics/log-analytics/v1.0/templates/log-analytics.jsonc
+          parameterFile: <REPLACE_WITH_PARAMETERFILE_IN_WORKLOAD>
+        - name: PRIVATE_AGENT_STAGING
+          resourceGroup: <REPLACE_WITH_RESOURCEGROUP_NAME>
+          subscription: <REPLACE_WITH_SUBSCRIPTION_NAME>
+          templateFile: compute/virtual-machine/v1.0/windows/templates/virtual-machine-privateagent.jsonc
+          parameterFile: <REPLACE_WITH_PARAMETERFILE_IN_WORKLOAD>
+        - name: VNET_Peering
+          resourceGroup: <REPLACE_WITH_RESOURCEGROUP_NAME>
+          subscription: <REPLACE_WITH_SUBSCRIPTION_NAME>
+          templateFile: networking/virtual-network/v2.0/templates/virtual-network-peering.jsonc
+          parameterFile: <REPLACE_WITH_PARAMETERFILE_IN_WORKLOAD>

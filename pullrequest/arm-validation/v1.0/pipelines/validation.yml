@@ -1,0 +1,37 @@
+parameters:
+  - name: "armresources"
+    type: object
+    default: []
+
+jobs:
+  - job: Checkout
+    steps:
+      - checkout: <LOCATION_OF_GENERIC_REPO> # e.g. git://Delta-N/DeltaN.Generic (git://project/repository)
+      - task: CopyFiles@2
+        inputs:
+          sourceFolder: $(Build.SourcesDirectory)
+          targetFolder: $(Build.ArtifactStagingDirectory)
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)
+          artifactName: drop
+  - ${{ each resource in parameters.armresources }}:
+    - job: Validation_${{ resource.Name }}
+      displayName: "Validating ARM ${{ resource.Name }}"
+      dependsOn: Checkout
+      steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: drop
+          - task: AzureCLI@2
+            displayName: Validate
+            inputs:
+              azureSubscription: ${{ resource.subscription }}
+              scriptType: ps
+              scriptLocation: inlineScript
+              inlineScript: >
+                az deployment group validate
+                --resource-group ${{ resource.resourceGroup }}
+                --subscription ${{ resource.subscription }}
+                --template-file $(Pipeline.Workspace)/${{ resource.templateFile }}
+                --parameters ${{ resource.parameterFile }}
