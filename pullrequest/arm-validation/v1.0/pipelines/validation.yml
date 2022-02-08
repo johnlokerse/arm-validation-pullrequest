@@ -6,7 +6,7 @@ parameters:
 jobs:
   - job: Checkout
     steps:
-      - checkout: <LOCATION_OF_GENERIC_REPO> # e.g. git://Delta-N/DeltaN.Generic (git://project/repository)
+      - checkout: <LOCATION_OF_GENERIC_REPO> # e.g. git://MyProject/MyRepo.Generic (git://project/repository)
       - task: CopyFiles@2
         inputs:
           sourceFolder: $(Build.SourcesDirectory)
